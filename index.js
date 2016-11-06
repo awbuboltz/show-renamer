@@ -21,17 +21,14 @@ rl.question('Filepath: ', (filepath) => {
                     return;
                 }
 
-                var parts, episodesToRename = [];
+                var episodesToRename = [];
 
                 files.forEach((name) => {
                     // ensure path leads to a file, not a directory
                     if (fs.statSync(`${filepath}/${name}`).isFile()) {
-                        parts = name.split('-');
-
-                        // if filename is in expected format of "Show Name - S##-E##.ext" then we can assume it is properly formatted
-                        if (parts.length === 3) {
+                        if (Episode.properlyFormatted(name)) {
                             // add FormattedEpisode object to the shows list of episodes
-                            show.addEpisode(new FormattedEpisode(name, parts));
+                            show.addEpisode(new FormattedEpisode(name));
                         }
                         else {
                             // needs to be formatted
