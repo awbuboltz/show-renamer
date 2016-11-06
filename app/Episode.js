@@ -1,3 +1,5 @@
+const path = require('path');
+
 class Episode {
     /**
      * @param {string} fileName
@@ -10,8 +12,7 @@ class Episode {
 
     /** @returns {string} */
     getExtension() {
-        var fn = this.fileName;
-        return fn.substring(fn.lastIndexOf('.'), fn.length);
+        return path.extname(this.fileName);
     }
 }
 
