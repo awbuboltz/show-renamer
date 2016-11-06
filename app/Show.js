@@ -2,7 +2,7 @@ class Show {
     /** @param {string} path */
     constructor(path) {
         // windows slashes
-        this.path = path.replace(/\\/g, '/');
+        this.path = path.trim().replace(/\\/g, '/');
         this.showName = this._getShowName();
         this.season = this._getSeason();
         this.episodes = [];
