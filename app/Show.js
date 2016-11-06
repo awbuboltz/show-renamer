@@ -60,9 +60,11 @@ class Show {
         // assumes current directory ends with "/Show Name/Season ##"
         var season = this.filePath.substring(this.filePath.lastIndexOf('/') + 1, this.filePath.length).split(' ')[1];
         if (season) {
+            season = season.trim();
             // ensure 0 prefix for < 10 numbers
             if (season.length < 2) {
-                season = '0' + season.trim();
+                console.log(`Warning: Season "${season}" is not 0 padded`);
+                season = '0' + season;
             }
 
             // add S in front of ##

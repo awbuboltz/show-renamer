@@ -49,9 +49,7 @@ rl.question('Filepath: ', (filepath) => {
                         rl.question(query, (answer) => {
                             if (answer.toLowerCase() === 'y') {
                                 fs.rename(`${show.filePath}/${curEp.fileName}`, `${show.filePath}/${newName}`, (err) => {
-                                    if (err) {
-                                        console.log(err);
-                                    }
+                                    console.log(err || 'File renamed');
                                 });
                             }
                             else {
