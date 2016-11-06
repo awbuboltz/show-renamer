@@ -1,0 +1,16 @@
+{
+  "name": "show-renamer",
+  "version": "1.0.0",
+  "main": "renamer.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "console.table": "^0.7.0",
+    "readline-sync": "^1.4.5"
+  },
+  "devDependencies": {},
+  "description": ""
+}
