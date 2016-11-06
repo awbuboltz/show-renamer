@@ -23,13 +23,19 @@ class Show {
      * @returns {string}
      */
     getNextEpisodeNum() {
-        // TODO: should find higest episode number rather than assume array length
-        var next = this.episodes.length
-            ? parseInt(this.episodes[this.episodes.length - 1].episodeNum, 10) + 1
-            : '1';
+        var next = '01';
 
-        // pad with a 0 if less than 10
-        next = next < 10 ? '0' + next : next;
+        if (this.episodes.length) {
+            // parse all episode numbers and find the max and add 1
+            next = Math.max.apply(Math,
+                this.episodes.map((episode) => {
+                    return parseInt(episode.episodeNum, 10);
+                })
+            ) + 1;
+
+            // pad with a 0 if less than 10
+            next = next < 10 ? '0' + next : next;
+        }
 
         // add E in front of ##
         return `E${String(next)}`;
