@@ -8,10 +8,11 @@ const rl = readline.createInterface({
     input: process.stdin,
     output: process.stdout
 });
+
 rl.question('Filepath: ', (filepath) => {
     const show = new Show(filepath);
 
-    fs.readdir(show.path, (err, files) => {
+    fs.readdir(show.filePath, (err, files) => {
         if (err) {
             console.log(err);
             return;
@@ -43,7 +44,7 @@ rl.question('Filepath: ', (filepath) => {
 
             rl.question(query, (answer) => {
                 if (answer.toLowerCase() === 'y') {
-                    fs.rename(`${show.path}/${curEp.fileName}`, `${show.path}/${newName}`, (err) => {
+                    fs.rename(`${show.filePath}/${curEp.fileName}`, `${show.filePath}/${newName}`, (err) => {
                         if (err) {
                             console.log(err);
                         }

@@ -1,8 +1,10 @@
+const path = require('path');
+
 class Show {
-    /** @param {string} path */
-    constructor(path) {
+    /** @param {string} filePath */
+    constructor(filePath) {
         // windows slashes
-        this.path = path.trim().replace(/\\/g, '/');
+        this.filePath = filePath.trim().replace(/\\/g, '/');
         this.showName = this._getShowName();
         this.season = this._getSeason();
         this.episodes = [];
@@ -44,7 +46,7 @@ class Show {
      */
     _getSeason() {
         // assumes current directory ends with "/Show Name/Season ##"
-        var season = this.path.substring(this.path.lastIndexOf('/') + 1, this.path.length).split(' ')[1];
+        var season = this.filePath.substring(this.filePath.lastIndexOf('/') + 1, this.filePath.length).split(' ')[1];
 
         // ensure 0 prefix for < 10 numbers
         if (season.length < 2) {
@@ -61,7 +63,7 @@ class Show {
      */
     _getShowName() {
         // assumes current directory ends with "/Show Name/Season ##"
-        var parts = this.path.split('/');
+        var parts = this.filePath.split('/');
         return parts[parts.length - 2].trim();
     }
 }
