@@ -4,7 +4,7 @@ class Show {
     /** @param {string} filePath */
     constructor(filePath) {
         // windows slashes
-        this.filePath = filePath.trim().replace(/\\/g, '/');
+        this.filePath = path.normalize(filePath).trim().replace(/\\/g, '/');
         this.showName = this._getShowName();
         this.season = this._getSeason();
         this.episodes = [];
@@ -23,12 +23,17 @@ class Show {
      * @returns {string}
      */
     getNextEpisodeNum() {
-        // TODO: what if no episodes exist?
-        // TODO: should find higest episode number rather than assume array length
-        var next = parseInt(this.episodes[this.episodes.length - 1].episodeNum, 10) + 1;
-        if (next <  10) {
-            next = '0' + next;
+        if (this.episodes.length) {
+            // TODO: should find higest episode number rather than assume array length
+            var next = parseInt(this.episodes[this.episodes.length - 1].episodeNum, 10) + 1;
+            if (next <  10) {
+                next = '0' + next;
+            }
         }
+        else {
+            next = 0;
+        }
+
         // add E in front of ##
         return `E${String(next)}`;
     }

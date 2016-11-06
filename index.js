@@ -51,7 +51,7 @@ rl.question('Filepath: ', (filepath) => {
                     });
                 }
                 else {
-                    console.log('File not renamed');
+                    console.log('Episode not renamed');
                 }
                 rl.close();
             });
