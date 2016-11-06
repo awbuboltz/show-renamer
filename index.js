@@ -24,43 +24,51 @@ rl.question('Filepath: ', (filepath) => {
                 var parts, episodesToRename = [];
 
                 files.forEach((name) => {
-                    parts = name.split('-');
+                    // ensure path leads to a file, not a directory
+                    if (fs.statSync(`${filepath}/${name}`).isFile()) {
+                        parts = name.split('-');
 
-                    // if filename is in expected format of "Show Name - S##-E##.ext" then we can assume it is properly formatted
-                    if (parts.length === 3) {
-                        // add FormattedEpisode object to the shows list of episodes
-                        show.addEpisode(new FormattedEpisode(name, parts));
-                    }
-                    else {
-                        // needs to be formatted
-                        episodesToRename.push(new Episode(name));
+                        // if filename is in expected format of "Show Name - S##-E##.ext" then we can assume it is properly formatted
+                        if (parts.length === 3) {
+                            // add FormattedEpisode object to the shows list of episodes
+                            show.addEpisode(new FormattedEpisode(name, parts));
+                        }
+                        else {
+                            // needs to be formatted
+                            episodesToRename.push(new Episode(name));
+                        }
                     }
                 });
 
-                console.log(`Episodes:`);
-                show.printEpisodes();
+                if (show.episodes.length || episodesToRename.length) {
 
-                if (episodesToRename.length) { // TODO: loop these (promises?)
-                    var curEp = episodesToRename[0],
-                        newName = `${show.showName} - ${show.season}-${show.getNextEpisodeNum() + curEp.getExtension()}`,
-                        query = `Rename:\t"${curEp.fileName}"\nto:\t\t"${newName}"\n(y/n)?: `;
+                    show.printEpisodes();
 
-                    rl.question(query, (answer) => {
-                        if (answer.toLowerCase() === 'y') {
-                            fs.rename(`${show.filePath}/${curEp.fileName}`, `${show.filePath}/${newName}`, (err) => {
-                                if (err) {
-                                    console.log(err);
-                                }
-                            });
-                        }
-                        else {
-                            console.log('Episode not renamed');
-                        }
-                        rl.close();
-                    });
+                    if (episodesToRename.length) { // TODO: loop these (promises?)
+                        var curEp = episodesToRename[0],
+                            newName = `${show.showName} - ${show.season}-${show.getNextEpisodeNum() + curEp.getExtension()}`,
+                            query = `Rename:\t"${curEp.fileName}"\nto:\t\t"${newName}"\n(y/n)?: `;
+
+                        rl.question(query, (answer) => {
+                            if (answer.toLowerCase() === 'y') {
+                                fs.rename(`${show.filePath}/${curEp.fileName}`, `${show.filePath}/${newName}`, (err) => {
+                                    if (err) {
+                                        console.log(err);
+                                    }
+                                });
+                            }
+                            else {
+                                console.log('Episode not renamed');
+                            }
+                            rl.close();
+                        });
+                    }
+                    else {
+                        console.log('All episodes properly formatted');
+                    }
                 }
                 else {
-                    console.log('All episodes properly formatted');
+                    console.log('No episodes found in directory');
                 }
             });
         }

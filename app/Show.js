@@ -23,16 +23,13 @@ class Show {
      * @returns {string}
      */
     getNextEpisodeNum() {
-        if (this.episodes.length) {
-            // TODO: should find higest episode number rather than assume array length
-            var next = parseInt(this.episodes[this.episodes.length - 1].episodeNum, 10) + 1;
-            if (next <  10) {
-                next = '0' + next;
-            }
-        }
-        else {
-            next = 0;
-        }
+        // TODO: should find higest episode number rather than assume array length
+        var next = this.episodes.length
+            ? parseInt(this.episodes[this.episodes.length - 1].episodeNum, 10) + 1
+            : '1';
+
+        // pad with a 0 if less than 10
+        next = next < 10 ? '0' + next : next;
 
         // add E in front of ##
         return `E${String(next)}`;
@@ -40,9 +37,13 @@ class Show {
 
     /** prints each episode fileName */
     printEpisodes() {
-        this.episodes.forEach((episode) => {
-            console.log(`${episode.fileName}`);
-        });
+        if (this.episodes.length) {
+            console.log(`Episodes:`);
+
+            this.episodes.forEach((episode) => {
+                console.log(`${episode.fileName}`);
+            });
+        }
     }
 
     /**
@@ -52,14 +53,19 @@ class Show {
     _getSeason() {
         // assumes current directory ends with "/Show Name/Season ##"
         var season = this.filePath.substring(this.filePath.lastIndexOf('/') + 1, this.filePath.length).split(' ')[1];
+        if (season) {
+            // ensure 0 prefix for < 10 numbers
+            if (season.length < 2) {
+                season = '0' + season.trim();
+            }
 
-        // ensure 0 prefix for < 10 numbers
-        if (season.length < 2) {
-            season = '0' + season.trim();
+            // add S in front of ##
+            return `S${season}`;
         }
-
-        // add S in front of ##
-        return `S${season}`;
+        else {
+            console.log('Error: Directory does not end with "Season ##"');
+            process.exit();
+        }
     }
 
     /**
