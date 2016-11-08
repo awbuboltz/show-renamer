@@ -1,3 +1,4 @@
+'use strict';
 const path = require('path');
 
 class Show {
@@ -7,7 +8,7 @@ class Show {
         this.filePath = path.normalize(filePath).trim().replace(/\\/g, '/');
         this.showName = this._getShowName();
         this.season = this._getSeason();
-        this.episodes = [];
+        this._episodes = [];
     }
 
     /**
@@ -15,20 +16,37 @@ class Show {
      * @param {Episode} episode
      */
     addEpisode(episode) {
-        this.episodes.push(episode);
+        this._episodes.push(episode);
+    }
+
+    /**
+     * returns an array of either properly formatted or improperly formatted episodes
+     * @param {boolean|undefined} [properlyFormatted] - undefined: all, true: proper format, false: improper format
+     * @returns {Array.<Episode>}
+     */
+    getEpisodes(properlyFormatted) {
+        if (typeof properlyFormatted === 'undefined') {
+            return this._episodes;
+        }
+
+        return this._episodes.filter(episode => {
+            let thisFormatted = episode.properlyFormatted();
+            return properlyFormatted ? thisFormatted : !thisFormatted;
+        });
     }
 
     /**
      * one more than the highest found episode number
      * @returns {string}
      */
-    getNextEpisodeNum() {
-        let next = '01';
+    get nextEpisodeNum() {
+        let next = '01',
+            properEpisodes = this.getEpisodes(true);
 
-        if (this.episodes.length) {
-            // parse all episode numbers and find the max and add 1
+        if (properEpisodes.length) {
+            // parse all episode numbers, find the max and add 1
             next = Math.max.apply(Math,
-                this.episodes.map((episode) => {
+                properEpisodes.map((episode) => {
                     return parseInt(episode.episodeNum, 10);
                 })
             ) + 1;
@@ -43,10 +61,12 @@ class Show {
 
     /** prints each episode fileName */
     printEpisodes() {
-        if (this.episodes.length) {
+        let allEpisodes = this.getEpisodes();
+
+        if (allEpisodes.length) {
             console.log(`Episodes in directory:`);
 
-            this.episodes.forEach((episode) => {
+            allEpisodes.forEach((episode) => {
                 console.log(`${episode.fileName}`);
             });
 

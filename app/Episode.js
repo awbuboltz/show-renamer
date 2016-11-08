@@ -1,12 +1,10 @@
+'use strict';
 const path = require('path');
 
 class Episode {
-    /**
-     * @param {string} fileName
-     */
+    /** @param {string} fileName */
     constructor(fileName) {
-        this.fileName = fileName;
-        this.parts = Episode.breakIntoParts(fileName);
+        this.fileName = fileName || '';
     }
 
     /** @returns {string} */
@@ -15,34 +13,43 @@ class Episode {
     }
 
     /**
-     * if filename is in expected format of "Show Name - S##-E##.ext" then we can assume it is properly formatted
-     * @param fileName
-     * @returns {boolean}
+     * splits files on "-" separator
+     * @returns {Array}
      */
-    static properlyFormatted(fileName) {
-        try {
-            let parts = this.breakIntoParts(fileName).map((part) => {
-                    // trim everything
-                    return part.trim();
-                }),
-                seasonNum = parts[1],
-                // split on the "." for the extension and take first part
-                episodeNum = parts[2].split('.')[0];
+    get parts() {
+        return this.fileName.split('-');
+    }
 
-                return parts.length === 3 && seasonNum.length === 3 && episodeNum.length === 3;
-        }
-        catch(ignore) {
-            return false;
-        }
+    /** @returns {string} */
+    get episodeNum() {
+        // get the E##.ext part
+        let end = this.parts[this.parts.length - 1],
+            // separate the E## from E##.ext
+            episode = end.split('.')[0];
+
+        // drop the E
+        return episode.slice(1);
     }
 
     /**
-     * breaks filename down on "-"
-     * @param {string} fileName
-     * @returns {Array}
+     * if filename is in expected format of "Show Name - S##-E##.ext" then we can assume it is properly formatted
+     * @returns {boolean}
      */
-    static breakIntoParts(fileName) {
-        return fileName ? fileName.split('-') : [];
+    properlyFormatted() {
+        try {
+            let trimmpedParts = this.parts.map((part) => {
+                    // trim everything
+                    return part.trim();
+                }),
+                seasonNum = trimmpedParts[1],
+                // split on the "." for the extension and take first part
+                episodeNum = trimmpedParts[2].split('.')[0];
+
+                return trimmpedParts.length === 3 && seasonNum.length === 3 && episodeNum.length === 3;
+        }
+        catch (ignore) {
+            return false;
+        }
     }
 }
 
