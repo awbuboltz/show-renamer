@@ -45,40 +45,49 @@ rl.question('Filepath: ', filepath => {
 
                         let p = Promise.resolve();
 
-                        show.getEpisodes(false).forEach(episode => { //TODO: getNextEpisode() will always return the same thing
+                        show.getEpisodes(false).forEach(episode => {
                             p = p.then(() => {
                                 return new Promise((resolve) => {
                                     const newName = `${show.showName} - ${show.season}-${show.nextEpisodeNum + episode.getExtension()}`,
                                         query = `Rename:\t"${episode.fileName}"\nto:\t\t"${newName}"\n(y/n/q to quit)?: `;
 
-                                    rl.question(query, answer => {
-                                        switch (answer.toLowerCase()) {
-                                            case 'y':
-                                                fs.rename(`${show.filePath}/${episode.fileName}`, `${show.filePath}/${newName}`, err => {
-                                                    let msg = 'File renamed';
+                                    askConfirm();
 
-                                                    if (err) {
-                                                        msg = err;
-                                                    }
-                                                    else {
-                                                        episode.fileName = newName;
-                                                    }
-                                                    console.log(`${msg}\n`);
+                                    function askConfirm() {
+                                        rl.question(query, answer => {
+                                            switch (answer.toLowerCase()) {
+                                                case 'y':
+                                                    fs.rename(`${show.filePath}/${episode.fileName}`, `${show.filePath}/${newName}`, err => {
+                                                        let msg = 'File renamed';
+
+                                                        if (err) {
+                                                            msg = err;
+                                                        }
+                                                        else {
+                                                            episode.fileName = newName;
+                                                        }
+                                                        console.log(`${msg}\n`);
+                                                        resolve();
+                                                    });
+                                                    break;
+                                                case 'q':
+                                                    console.log('Exiting');
+                                                    process.exit();
+                                                    break;
+                                                case 'n':
+                                                    console.log('Episode not renamed');
                                                     resolve();
-                                                });
-                                                break;
-                                            case 'q':
-                                                console.log('Exiting');
-                                                process.exit();
-                                                break;
-                                            case 'n':
-                                                console.log('Episode not renamed');
-                                                resolve();
-                                                break;
-                                        }
+                                                    break;
+                                                default:
+                                                    console.log('\ny/n/q are the only values accepted\n');
+                                                    askConfirm();
+                                                    break;
 
-                                        console.log();
-                                    });
+                                            }
+
+                                            console.log();
+                                        });
+                                    }
                                 });
                             });
                         });
@@ -87,7 +96,6 @@ rl.question('Filepath: ', filepath => {
                             console.log('All episodes properly formatted\n');
                             show.printEpisodes();
                             rl.close();
-                            process.exit();
                         });
                     }
                 }
