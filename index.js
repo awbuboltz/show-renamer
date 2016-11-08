@@ -1,7 +1,6 @@
 require('console.table');
 const fs = require('fs'),
     readline = require('readline'),
-    path = require('path'),
     Show = require('./app/Show'),
     Episode = require('./app/Episode'),
     FormattedEpisode = require('./app/FormattedEpisode'),
@@ -9,17 +8,20 @@ const fs = require('fs'),
         input: process.stdin,
         output: process.stdout
     }),
+    // testing
     dev = {
         test: true,
         path: `${__dirname}\\test\\Show One\\Season 01`
     };
 
-rl.question('Filepath: ', (filepath) => {
+rl.question('Filepath: ', filepath => {
     // test mode
     filepath = filepath || (dev.test ? dev.path : filepath);
-console.log(filepath);
+
+    console.log();
+
     // ensure the filepath is valid
-    fs.access(filepath, fs.F_OK, function(err) {
+    fs.access(filepath, fs.F_OK, err => {
         if (!err) {
             const show = new Show(filepath);
 
@@ -29,9 +31,9 @@ console.log(filepath);
                     return;
                 }
 
-                let episodesToRename = [];
+                const episodesToRename = [];
 
-                files.forEach((name) => {
+                files.forEach(name => {
                     // ensure path leads to a file, not a directory
                     if (fs.statSync(`${filepath}/${name}`).isFile()) {
                         if (Episode.properlyFormatted(name)) {
@@ -49,21 +51,43 @@ console.log(filepath);
 
                     show.printEpisodes();
 
-                    if (episodesToRename.length) { // TODO: loop these (promises?)
-                        let curEp = episodesToRename[0],
-                            newName = `${show.showName} - ${show.season}-${show.getNextEpisodeNum() + curEp.getExtension()}`,
-                            query = `Rename:\t"${curEp.fileName}"\nto:\t\t"${newName}"\n(y/n)?: `;
+                    if (episodesToRename.length) {
+                        let p = Promise.resolve();
 
-                        rl.question(query, (answer) => {
-                            if (answer.toLowerCase() === 'y') {
-                                fs.rename(`${show.filePath}/${curEp.fileName}`, `${show.filePath}/${newName}`, (err) => {
-                                    console.log(err || 'File renamed');
+                        episodesToRename.forEach(episode => { //TODO: getNextEpisode() will always return the same thing
+                            p = p.then(() => {
+                                return new Promise((resolve, reject) => {
+                                    const newName = `${show.showName} - ${show.season}-${show.getNextEpisodeNum() + episode.getExtension()}`,
+                                        query = `Rename:\t"${episode.fileName}"\nto:\t\t"${newName}"\n(y/n/q to quit)?: `;
+
+                                    rl.question(query, answer => {
+                                        switch (answer.toLowerCase()) {
+                                            case 'y':
+                                                fs.rename(`${show.filePath}/${episode.fileName}`, `${show.filePath}/${newName}`, err => {
+                                                    console.log(err || 'File renamed');
+                                                    resolve();
+                                                });
+                                                break;
+                                            case 'q':
+                                                console.log('Exiting');
+                                                process.exit();
+                                                break;
+                                            case 'n':
+                                                console.log('Episode not renamed');
+                                                resolve();
+                                                break;
+                                        }
+
+                                        console.log();
+                                    });
                                 });
-                            }
-                            else {
-                                console.log('Episode not renamed');
-                            }
+                            });
+                        });
+
+                        p.then(() => {
+                            console.log('All files renamed');
                             rl.close();
+                            process.exit();
                         });
                     }
                     else {

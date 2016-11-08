@@ -4,7 +4,7 @@ class FormattedEpisode extends Episode {
     /** @returns {string} */
     get episodeNum() {
         // get the E##.ext part
-        var end = this.parts[this.parts.length - 1],
+        let end = this.parts[this.parts.length - 1],
             // separate the E## from E##.ext
             episode = end.split('.')[0];
 

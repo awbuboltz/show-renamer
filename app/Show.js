@@ -23,7 +23,7 @@ class Show {
      * @returns {string}
      */
     getNextEpisodeNum() {
-        var next = '01';
+        let next = '01';
 
         if (this.episodes.length) {
             // parse all episode numbers and find the max and add 1
@@ -44,11 +44,13 @@ class Show {
     /** prints each episode fileName */
     printEpisodes() {
         if (this.episodes.length) {
-            console.log(`Episodes:`);
+            console.log(`Episodes in directory:`);
 
             this.episodes.forEach((episode) => {
                 console.log(`${episode.fileName}`);
             });
+
+            console.log();
         }
     }
 
@@ -58,7 +60,7 @@ class Show {
      */
     _getSeason() {
         // assumes current directory ends with "/Show Name/Season ##"
-        var season = this.filePath.substring(this.filePath.lastIndexOf('/') + 1, this.filePath.length).split(' ')[1];
+        let season = this.filePath.substring(this.filePath.lastIndexOf('/') + 1, this.filePath.length).split(' ')[1];
         if (season) {
             season = season.trim();
             // ensure 0 prefix for < 10 numbers
@@ -82,7 +84,7 @@ class Show {
      */
     _getShowName() {
         // assumes current directory ends with "/Show Name/Season ##"
-        var parts = this.filePath.split('/');
+        const parts = this.filePath.split('/');
         return parts[parts.length - 2].trim();
     }
 }

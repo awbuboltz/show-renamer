@@ -21,7 +21,7 @@ class Episode {
      */
     static properlyFormatted(fileName) {
         try {
-            var parts = this.breakIntoParts(fileName).map((part) => {
+            let parts = this.breakIntoParts(fileName).map((part) => {
                     // trim everything
                     return part.trim();
                 }),
