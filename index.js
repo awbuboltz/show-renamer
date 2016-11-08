@@ -1,15 +1,23 @@
 require('console.table');
-const fs = require('fs');
-const readline = require('readline');
-const Show = require('./app/Show');
-const Episode = require('./app/Episode');
-const FormattedEpisode = require('./app/FormattedEpisode');
-const rl = readline.createInterface({
-    input: process.stdin,
-    output: process.stdout
-});
+const fs = require('fs'),
+    readline = require('readline'),
+    path = require('path'),
+    Show = require('./app/Show'),
+    Episode = require('./app/Episode'),
+    FormattedEpisode = require('./app/FormattedEpisode'),
+    rl = readline.createInterface({
+        input: process.stdin,
+        output: process.stdout
+    }),
+    dev = {
+        test: true,
+        path: `${__dirname}\\test\\Show One\\Season 01`
+    };
 
 rl.question('Filepath: ', (filepath) => {
+    // test mode
+    filepath = filepath || (dev.test ? dev.path : filepath);
+console.log(filepath);
     // ensure the filepath is valid
     fs.access(filepath, fs.F_OK, function(err) {
         if (!err) {
@@ -21,7 +29,7 @@ rl.question('Filepath: ', (filepath) => {
                     return;
                 }
 
-                var episodesToRename = [];
+                let episodesToRename = [];
 
                 files.forEach((name) => {
                     // ensure path leads to a file, not a directory
@@ -42,7 +50,7 @@ rl.question('Filepath: ', (filepath) => {
                     show.printEpisodes();
 
                     if (episodesToRename.length) { // TODO: loop these (promises?)
-                        var curEp = episodesToRename[0],
+                        let curEp = episodesToRename[0],
                             newName = `${show.showName} - ${show.season}-${show.getNextEpisodeNum() + curEp.getExtension()}`,
                             query = `Rename:\t"${curEp.fileName}"\nto:\t\t"${newName}"\n(y/n)?: `;
 
