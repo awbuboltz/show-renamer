@@ -10,7 +10,7 @@ const fs = require('fs'),
     }),
     // testing
     dev = {
-        test: true,
+        test: false,
         path: `${__dirname}\\test\\Show One\\Season 01`
     };
 
